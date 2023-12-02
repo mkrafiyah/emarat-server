@@ -32,8 +32,22 @@ async function run() {
     const reviewCollection = client.db("emaratDb").collection("reviews");
     const wishCollection = client.db("emaratDb").collection("wishes");
     const boughtCollection = client.db("emaratDb").collection("bought");
+    const userCollection = client.db("emaratDb").collection("users");
 
 
+    //user
+    app.post('/users', async(req, res)=>{
+      const user = req.body;
+      const query = {email: user.email}
+      const existingUser = await userCollection.findOne(query);
+      if(existingUser){
+        return res.send({message: 'user already exists', insertedId: null})
+      }
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+   })
+
+   //property
      app.get('/properties', async(req, res)=>{
         const result = await propertyCollection.find().toArray();
         res.send(result);
