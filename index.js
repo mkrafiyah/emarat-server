@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+// const jwt = require('jsonwebtoken')
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 
@@ -50,6 +51,28 @@ async function run() {
       const result = await userCollection.insertOne(user);
       res.send(result);
    })
+   //admin api
+   app.patch('/users/admin/:id', async(req, res)=>{
+    const id = req.params.id;
+    const filter = {_id: new ObjectId(id)};
+    const updateDoc = {
+      $set: {
+        role: 'admin'
+      }
+    }
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send(result);
+   })
+
+   app.get('/users/admin/:email', async(req, res)=>{
+    const query = {email: email};
+    const user = await userCollection.findOne(query);
+    let isAdmin = false;
+    if(user){
+      isAdmin = user?.role === 'admin'
+    }
+    res.send({isAdmin})
+   })
    app.delete('/users/:id', async(req, res)=>{
     const id = req.params.id;
     const query = {_id: new ObjectId(id)};
@@ -74,6 +97,17 @@ async function run() {
      app.get('/reviews', async(req, res)=>{
       const result = await reviewCollection.find().toArray();
       res.send(result);
+   })
+     app.post('/reviews', async(req, res)=>{
+      const reviewItem = req.body;
+      const result = await reviewCollection.insertOne(reviewItem);
+      res.send(result);
+   })
+   app.delete('/reviews/:id', async(req, res)=>{
+    const id = req.params.id;
+  const query = {_id: new ObjectId(id)};
+  const result = await reviewCollection.deleteOne(query);
+  res.send(result);
    })
 
    //wishes collection
