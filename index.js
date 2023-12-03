@@ -156,6 +156,8 @@ async function run() {
     
   })
 
+  //wishes
+
    app.post('/wishes', async(req, res)=>{
     const wishItem = req.body;
     const result = await wishCollection.insertOne(wishItem);
