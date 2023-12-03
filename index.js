@@ -64,14 +64,26 @@ async function run() {
       res.send(result);
    })
 
-   app.get('/users/admin/:email', async(req, res)=>{
+   app.get('/users/admin', async(req, res)=>{
+    const email = req.query.email;
     const query = {email: email};
     const user = await userCollection.findOne(query);
-    let isAdmin = false;
     if(user){
-      isAdmin = user?.role === 'admin'
+      role = user?.role;
     }
-    res.send({isAdmin})
+    res.send({role})
+   })
+   //agent
+   app.patch('/users/agent/:id', async(req, res)=>{
+    const id = req.params.id;
+    const filter = {_id: new ObjectId(id)};
+    const updateDoc = {
+      $set: {
+        role: 'agent'
+      }
+    }
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send(result);
    })
    app.delete('/users/:id', async(req, res)=>{
     const id = req.params.id;
